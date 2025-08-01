@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import Habit_templates
 
 
-POPULAR_LIMIT = 5
+POPULAR_LIMIT = 3
 
 
 async def get_popular_habits(session: AsyncSession, offset: int = 0, limit: int = POPULAR_LIMIT):

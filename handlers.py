@@ -101,7 +101,7 @@ async def goal_habits(callback: CallbackQuery):
 
 
 @router.callback_query(F.data == 'popular_habits')
-async def show_popular_habits(callback: CallbackQuery):
+async def show_popular_habits(callback: CallbackQuery, session: AsyncSession):
     await callback.answer('Вы решили посмотреть популярные привычки')
 
     text = (
@@ -110,16 +110,14 @@ async def show_popular_habits(callback: CallbackQuery):
         "Или нажми «Показать ещё», чтобы увидеть больше вариантов."
     )
 
-    async with SessionLocal() as session:
-        habits, has_more = await get_popular_habits(session, offset=0, limit=POPULAR_LIMIT)
-        keyboard = build_popular_habits_keyboard(habits, offset=0, limit=POPULAR_LIMIT, has_more=has_more)
-
+    habits, has_more = await get_popular_habits(session, offset=0, limit=POPULAR_LIMIT)
+    keyboard = build_popular_habits_keyboard(habits, offset=0, limit=POPULAR_LIMIT, has_more=has_more)
 
     await callback.message.answer(text, reply_markup=keyboard, parse_mode="Markdown")
 
 
 @router.callback_query(F.data.startswith("show_more_habits_"))
-async def show_more_popular_habits(callback: CallbackQuery):
+async def show_more_popular_habits(callback: CallbackQuery, session: AsyncSession):
     offset = int(callback.data.split("_")[-1])
 
     text = (
@@ -127,9 +125,8 @@ async def show_more_popular_habits(callback: CallbackQuery):
         "Выбирай любую из списка ниже 👇"
     )
 
-    async with SessionLocal() as session:
-        habits, has_more = await get_popular_habits(session, offset=offset, limit=POPULAR_LIMIT)
-        keyboard = build_popular_habits_keyboard(habits, offset=offset, limit=POPULAR_LIMIT, has_more=has_more)
+    habits, has_more = await get_popular_habits(session, offset=offset, limit=POPULAR_LIMIT)
+    keyboard = build_popular_habits_keyboard(habits, offset=offset, limit=POPULAR_LIMIT, has_more=has_more)
 
     await callback.message.edit_reply_markup(text, reply_markup=keyboard, parse_mode="Markdown")
 
@@ -149,7 +146,7 @@ async def goal_efficiency(callback: CallbackQuery):
     await callback.answer('Ваша цель повысить эффективность')
 
 
-@router.callback_query(F.data == 'review')
+@router.callback_query(F.data == 'preview')
 async def goal_review(callback: CallbackQuery):
-    await callback.answer('Вы просто хотите узнать, что умеет бот')
-
+    await callback.message.answer('Ничё не умеет! Тыкает тут 😡😡😡')
+    await callback.answer(text = '😡😡😡', show_alert=True)
