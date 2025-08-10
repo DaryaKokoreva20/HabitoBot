@@ -122,13 +122,17 @@ async def show_more_popular_habits(callback: CallbackQuery, session: AsyncSessio
 
     text = (
         "✨ *Вот ещё популярные привычки:*\n\n"
-        "Выбирай любую из списка ниже 👇"
+        "Выбирай любую из списка ниже 👇\n"
+        "Ты можешь вернуться к предыдущим привычкам, нажав кнопку 'Вернуться назад'"
     )
 
     habits, has_more = await get_popular_habits(session, offset=offset, limit=POPULAR_LIMIT)
     keyboard = build_popular_habits_keyboard(habits, offset=offset, limit=POPULAR_LIMIT, has_more=has_more)
 
-    await callback.message.edit_reply_markup(text, reply_markup=keyboard, parse_mode="Markdown")
+    try:
+        await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="Markdown")
+    except Exception as e:
+        await callback.message.answer(text, reply_markup=keyboard, parse_mode="Markdown")
 
 
 @router.callback_query(F.data.startswith("add_template_"))

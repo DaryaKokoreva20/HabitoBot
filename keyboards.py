@@ -24,21 +24,32 @@ habits_keyboard = InlineKeyboardMarkup(
 
 
 def build_popular_habits_keyboard(habits: list[Habit_templates], offset: int, limit: int, has_more: bool) -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(
-                text=f"{habit.emoji} {habit.name}",
-                callback_data=f"add_template_{habit.id}"
-            )] for habit in habits
-        ]
-    )
+    rows = [
+        [InlineKeyboardButton(
+            text=f"{habit.emoji} {habit.name}",
+            callback_data=f"add_template_{habit.id}"
+        )] for habit in habits
+    ]
+
+    nav = []
+    if offset > 0:
+        prev_offset = max(0, offset - limit)
+        nav.append(
+            InlineKeyboardButton(
+                text="⬅️ Вернуться назад",
+                callback_data=f"show_more_habits_{prev_offset}"
+            )
+        )
 
     if has_more:
-        keyboard.inline_keyboard.append([
+        nav.append(
             InlineKeyboardButton(
                 text="➡️ Показать ещё",
                 callback_data=f"show_more_habits_{offset + limit}"
             )
-        ])
+        )
 
-    return keyboard
+    if nav:
+        rows.append(nav)
+
+    return InlineKeyboardMarkup(inline_keyboard=rows)
